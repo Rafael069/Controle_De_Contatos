@@ -5,9 +5,20 @@
 
 /*let table = new DataTable('#table-contatos');*/
 
+
+
+
 $(document).ready(function () {
 
-    $('#table-contatos').DataTable({
+    getDataTable("#table-contatos");
+    getDataTable("#table-usuarios");
+
+})
+
+// Criando uma função para o layout das telas
+
+function getDataTable(id) {
+    $(id).DataTable({
         "ordering": true,
         "paging": true,
         "searching": true,
@@ -35,8 +46,12 @@ $(document).ready(function () {
             }
         }
     });
+}
 
-});
+
+
+
+
 
 // Quando for clicado no close alert
 
