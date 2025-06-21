@@ -22,11 +22,16 @@ namespace ControleDeContatos.Controllers
         {
             // Se usuario estiver logado, redirecionar para o home
 
-            if (_sessao.BuscarSessaoDoUsuario() != null) return RedirectToAction("Index" , "Home");
+            if (_sessao.BuscarSessaoDoUsuario() != null) return RedirectToAction("Index", "Home");
 
             return View();
         }
 
+
+        public IActionResult RedefinirSenha()
+        {
+            return View();
+        }
 
 
         public IActionResult Sair()
@@ -47,7 +52,7 @@ namespace ControleDeContatos.Controllers
                 {
                     UsuarioModel usuario = _usuarioRepositorio.BuscarPorLogin(loginModel.Login);
 
-                    if (usuario != null )
+                    if (usuario != null)
                     {
 
                         if (usuario.SenhaValida(loginModel.Senha))
@@ -73,5 +78,38 @@ namespace ControleDeContatos.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult EnviarLinkParaRedefinirSenha(RedefinirSenhaModel redefinirSenhaModel)
+        {
+            try
+            {
+                // Validação
+
+                if (ModelState.IsValid)
+                {
+                    UsuarioModel usuario = _usuarioRepositorio.BuscarPorEmailELogin(redefinirSenhaModel.Email, redefinirSenhaModel.Login);
+
+                    if (usuario != null)
+                    {
+
+                        string novaSenha = usuario.GerarNovaSenha();
+
+                        TempData["MensagemSucesso"] = $"Enviamos para seu e-mail cadastrado uma nova senha.";
+                        return RedirectToAction("Index","Login");
+
+                    }
+
+
+                    TempData["MensagemErro"] = $"Não conseguimos redefinir sua senha. Por favor verifique os dados informados.";
+                }
+
+                return View("Index");
+            }
+            catch (Exception erro)
+            {
+                TempData["MensagemErro"] = $"Ops, não conseguimos redefinir sua senha, tente novamente, detalhe do erro: {erro.Message}";
+                return RedirectToAction("Index");
+            }
+        }
     }
 }
